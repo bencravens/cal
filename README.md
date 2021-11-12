@@ -1,2 +1,3 @@
 # cal
-Command line google calendar 
+Command line google calendar clone.
+ Plan your week from the command line!
