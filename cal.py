@@ -63,7 +63,7 @@ class cal:
         times=list(self.cal.keys()) #possible times
         time_ind = times.index(time)
         #update dataframe for specific day and time
-        self.cal.loc[day][time_ind]=""
+        self.cal.loc[day][time_ind]=" "
         #save changes
         self.store_cal(self.filename)
 
