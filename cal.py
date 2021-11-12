@@ -1,6 +1,7 @@
 import pandas as pd
 import sys
 import argparse
+from tabulate import tabulate
 
 class cal:
     
@@ -48,7 +49,6 @@ class cal:
         We then insert this into the calendar.'''
         times=list(self.cal.keys()) #possible times
         time_ind = times.index(time)
-        print(self.cal.index)
         #update dataframe for specific day and time
         self.cal.loc[day][time_ind]=event
         #save changes
@@ -118,4 +118,5 @@ if __name__=="__main__":
     if args.update is not None and args.time is not None and args.day is not None:
         mycal.set_event(args.update,args.time,args.day)
     if args.print_cal:
-        print(mycal.get_cal())
+        #pretty printing using tabulate
+        print(tabulate(mycal.get_cal(), headers='keys', tablefmt='psql'))
