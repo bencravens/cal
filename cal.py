@@ -56,10 +56,16 @@ class cal:
         #save changes
         self.store_cal(self.filename)
 
-    def read_cal(self,file_name):
-        '''reads calendar stored in csv file
-        and updates our entries to reflect these values'''
-        pass
+    def del_event(self,time,day):
+        '''Takes as input a time and a day and
+            deletes the corresponding entry in the 
+            calendar. '''
+        times=list(self.cal.keys()) #possible times
+        time_ind = times.index(time)
+        #update dataframe for specific day and time
+        self.cal.loc[day][time_ind]=""
+        #save changes
+        self.store_cal(self.filename)
 
     def store_cal(self,file_name):
         '''stores our calendar in a csv file called
@@ -96,7 +102,7 @@ if __name__=="__main__":
                     )
     parser.add_argument('-del', '--delete', 
                     help='Usage: -delete -t time -d day',
-                    type=str,
+                    action='store_true'
                     )
     parser.add_argument('-t', '--time',
                     help='Usage: -t 09:00 (24 hour time in 1 hr increments from 08:00-17:00',
@@ -119,6 +125,9 @@ if __name__=="__main__":
     #update cal
     if args.update is not None and args.time is not None and args.day is not None:
         mycal.set_event(args.update,args.time,args.day)
+    #delete entry from cal
+    if args.delete and args.time is not None and args.day is not None:
+        mycal.del_event(args.time,args.day)
     if args.print_cal:
         #pretty printing using tabulate
         mycal.print_cal()
