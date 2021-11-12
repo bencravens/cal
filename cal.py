@@ -4,44 +4,55 @@ import argparse
 
 class cal:
     
-    def __init__(self,filename="null"):
+    def __init__(self,filename):
         ''' Initializes a cal object with a daily timetable dictionary self.schedule,
         which we use to initialize a cal dataframe self.cal'''
         
         self.filename = filename
-        if filename != "null":
-            try:
-                #try to read csv from filename
-                self.cal = pd.read_csv(self.filename)
-            except:
-                print("can't read cal from filename {}".format(filename))
-        
-        #make empty cal.
-        self.schedule = {
-            "08:00": ["","","","","","",""],
-            "09:00": ["","","","","","",""],
-            "10:00": ["","","","","","",""],
-            "11:00": ["","","","","","",""],
-            "12:00": ["","","","","","",""],
-            "13:00": ["","","","","","",""],
-            "14:00": ["","","","","","",""],
-            "15:00": ["","","","","","",""],
-            "16:00": ["","","","","","",""],
-            "17:00": ["","","","","","",""],
-        }
-        self.cal = pd.DataFrame(self.schedule, 
-            index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
-        
+        try:
+            #try to read csv from filename
+            self.cal = pd.read_csv(self.filename, index_col=False)
+            # Drop first column of redundant index (storing in csv messes up index, have to redo
+            #self.cal.drop(columns=self.cal.columns[0], 
+            #    axis=1, 
+            #    inplace=True)
+            self.cal.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "    Sunday"]
+        except Exception as e:
+            print(e)
+            #make empty cal.
+            self.schedule = {
+                "08:00": [" "," "," "," "," "," "," "],
+                "09:00": [" "," "," "," "," "," "," "],
+                "10:00": [" "," "," "," "," "," "," "],
+                "11:00": [" "," "," "," "," "," "," "],
+                "12:00": [" "," "," "," "," "," "," "],
+                "13:00": [" "," "," "," "," "," "," "],
+                "14:00": [" "," "," "," "," "," "," "],
+                "15:00": [" "," "," "," "," "," "," "],
+                "16:00": [" "," "," "," "," "," "," "],
+                "17:00": [" "," "," "," "," "," "," "],
+            }
+            self.cal = pd.DataFrame(self.schedule, 
+                index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
+            #store the cal
+            self.store_cal(self.filename)
+            
     def get_cal(self):
         ''' Getter method to return the self.cal attribute containing our
         schedule for this week.'''
         return self.cal
 
-    def set_event(self,event,day,time):
+    def set_event(self,event,time,day):
         '''Takes as input the event we want to enter to our calendar, 
         the day we want this event to happen on, and the time.
         We then insert this into the calendar.'''
-        pass
+        times=list(self.cal.keys()) #possible times
+        time_ind = times.index(time)
+        print(self.cal.index)
+        #update dataframe for specific day and time
+        self.cal.loc[day][time_ind]=event
+        #save changes
+        self.store_cal(self.filename)
 
     def read_cal(self,file_name):
         '''reads calendar stored in csv file
@@ -51,6 +62,7 @@ class cal:
     def store_cal(self,file_name):
         '''stores our calendar in a csv file called
         file_name'''
+        self.cal.to_csv(file_name,index=False)
         pass
 
 if __name__=="__main__":
@@ -102,5 +114,8 @@ if __name__=="__main__":
     
     #initialize cal object and call it...
     mycal = cal(args.filename)
+    #update cal
+    if args.update is not None and args.time is not None and args.day is not None:
+        mycal.set_event(args.update,args.time,args.day)
     if args.print_cal:
         print(mycal.get_cal())
