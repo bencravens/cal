@@ -4,9 +4,19 @@ import argparse
 
 class cal:
     
-    def __init__(self):
+    def __init__(self,filename="null"):
         ''' Initializes a cal object with a daily timetable dictionary self.schedule,
         which we use to initialize a cal dataframe self.cal'''
+        
+        self.filename = filename
+        if filename != "null":
+            try:
+                #try to read csv from filename
+                self.cal = pd.read_csv(self.filename)
+            except:
+                print("can't read cal from filename {}".format(filename))
+        
+        #make empty cal.
         self.schedule = {
             "08:00": ["","","","","","",""],
             "09:00": ["","","","","","",""],
@@ -31,6 +41,7 @@ class cal:
         '''Takes as input the event we want to enter to our calendar, 
         the day we want this event to happen on, and the time.
         We then insert this into the calendar.'''
+        pass
 
     def read_cal(self,file_name):
         '''reads calendar stored in csv file
@@ -44,26 +55,33 @@ class cal:
 
 if __name__=="__main__":
     """read calendar file name in from command line argument
-       additional arguments: 
+       arguments: 
+       update / delete at specific time
+           -t 09:00
+       update / delete at specific day
+           -d Monday
        update event at specific time and day.
-           -u event_str time day
+           -u "event_str" -t "09:00" -d "Monday"
        delete event at specific time
-           -d time day
+           -del -t "08:00" -d "Tuesday"
        print out calendar
            -p 
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('-q', '--quiet',
+    parser.add_argument('-p', '--print_cal',
                     action='store_true',
-                    dest='quiet',
-                    help='Suppress Output'
+                    help='Print calender state'
                     )
-    parser.add_argument('-v', '--verbose',
-                    action='store_true',
-                    help='Verbose Output'
+    parser.add_argument('-f', '--filename',
+                    help='Usage: -f mycal.csv',
+                    type=str,
                     )
     parser.add_argument('-u', '--update', 
                     help='Usage: -u event_str -t time -d day',
+                    type=str,
+                    )
+    parser.add_argument('-del', '--delete', 
+                    help='Usage: -delete -t time -d day',
                     type=str,
                     )
     parser.add_argument('-t', '--time',
@@ -81,6 +99,8 @@ if __name__=="__main__":
                     type=str,
                     )
     args = parser.parse_args()
-
-    print('New event is {} at {} on {}'.format(
-            args.update,args.time,args.day))
+    
+    #initialize cal object and call it...
+    mycal = cal(args.filename)
+    if args.print_cal:
+        print(mycal.get_cal())
