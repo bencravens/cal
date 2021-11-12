@@ -3,6 +3,8 @@ import sys
 import argparse
 from tabulate import tabulate
 
+'''Calendar Class: implements a google-calendar like object
+as a pandas dataframe, stores in a csv file.'''
 class cal:
     
     def __init__(self,filename):
@@ -13,11 +15,7 @@ class cal:
         try:
             #try to read csv from filename
             self.cal = pd.read_csv(self.filename, index_col=False)
-            # Drop first column of redundant index (storing in csv messes up index, have to redo
-            #self.cal.drop(columns=self.cal.columns[0], 
-            #    axis=1, 
-            #    inplace=True)
-            self.cal.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "    Sunday"]
+            self.cal.index = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
         except Exception as e:
             print(e)
             #make empty cal.
@@ -42,6 +40,10 @@ class cal:
         ''' Getter method to return the self.cal attribute containing our
         schedule for this week.'''
         return self.cal
+
+    def print_cal(self):
+        '''Just print the cal'''
+        print(tabulate(self.cal, headers='keys', tablefmt='psql'))
 
     def set_event(self,event,time,day):
         '''Takes as input the event we want to enter to our calendar, 
@@ -119,4 +121,4 @@ if __name__=="__main__":
         mycal.set_event(args.update,args.time,args.day)
     if args.print_cal:
         #pretty printing using tabulate
-        print(tabulate(mycal.get_cal(), headers='keys', tablefmt='psql'))
+        mycal.print_cal()
